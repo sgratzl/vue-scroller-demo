@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div id="app">
     <virtual-table :cols="cols" :rows="rows"/>
   </div>
@@ -15,17 +15,24 @@ export default {
   data () {
     const url = new URL(window.location.href)
     return {
-      cols: parseInt(url.searchParams.get('cols') || 10, 10),
-      rows: parseInt(url.searchParams.get('cols') || 10, 10)
+      cols: parseInt(url.searchParams.get('cols') || 2000, 10),
+      rows: parseInt(url.searchParams.get('rows') || 200, 10)
     }
   }
 }
 </script>
 
 <style>
+body {
+  margin: 0;
+  padding: 0;
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
 }
 </style>

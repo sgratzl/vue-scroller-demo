@@ -1,26 +1,28 @@
 <template>
-  <table>
-    <thead>
-      <tr>
-        <th></th>
-        <th v-for="c in colNames" :key="c">
-          {{c}}
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(row, i) in cells" :key="i">
-        <th>{{rowNames[i]}}</th>
-        <td v-for="(v, j) in row" :key="j">
-          {{v}}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <RecycleScroller class="scroller" :items="columns" :item-size="80" key-field="name" direction="horizontal">
+    <template #before>
+      <div class="tcr">
+        <div class="tch"></div>
+        <div v-for="r in rowNames" :key="r" :class="{trh: true, even: i % 2 ===0}">{{r}}</div>
+      </div>
+    </template>
+    <template #default="{ item, index }">
+      <div :class="{tc: true, even: index % 2 ===0}">
+        <div class="tch">{{item.name}}</div>
+        <div v-for="(r,i) in item.values" :key="i" :class="{td: true, even: i % 2 ===0}">{{r}}</div>
+      </div>
+    </template>
+  </RecycleScroller>
 </template>
 
 <script>
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import { RecycleScroller } from 'vue-virtual-scroller'
+
 export default {
+  components: {
+    RecycleScroller
+  },
   props: {
     cols: {
       type: Number,
@@ -42,43 +44,26 @@ export default {
 
   computed: {
     colNames () {
-      return Array.from({ length: this.cols }).map((_, i) => this.toBase26(i))
+      return Array.from({ length: this.cols }).map((_, i) => base26Converter(i + 1))
     },
     rowNames () {
       return Array.from({ length: this.rows }).map((_, i) => (i + 1).toString())
     },
-    cells () {
-      const cells = []
-      const isCategory = this.colNames.map(() => Math.random() < this.catColumnPercentage)
-      for (let i = 0; i < this.rows; ++i) {
-        const row = []
-        for (let j = 0; j < this.cols; ++j) {
-          if (row === 0) {
-            row.push(this.generateLabel(j))
-          } else if (isCategory[j]) {
-            row.push(this.generateCategory())
-          } else {
-            row.push(this.generateValue())
-          }
-        }
-        cells.push(row)
+    columns () {
+      const columns = []
+
+      for (let j = 0; j < this.cols; ++j) {
+        const isCategory = Math.random() < this.catColumnPercentage
+        columns.push({
+          name: this.colNames[j],
+          values: isCategory ? this.rowNames.map(() => this.generateCategory()) : this.rowNames.map(() => this.generateValue())
+        })
       }
-      return cells
+      return columns
     }
   },
 
   methods: {
-    toBase26 (v) {
-      let r = []
-      let vi = v
-      const encode = v => String.fromCharCode('A'.charCodeAt(0) + v)
-      while (vi >= 26) {
-        r.unshift(encode(Math.floor(vi / 26)))
-        vi = vi % 26
-      }
-      r.unshift(encode(vi))
-      return r.join('')
-    },
     generateValue () {
       const isMissing = Math.random() < this.missingPercentage
       if (isMissing) {
@@ -95,7 +80,87 @@ export default {
     }
   }
 }
+
+/**
+ * Convert decimal to base26 in upper case
+ * where A = 1, Z = 26, AA = 27, and 0 cannot be encoded.
+ * @param {Number} dec a decimal number to convert
+ */
+function base26Converter (dec) {
+  if (dec < 1) {
+    throw new Error('Numbers below 1 cannot be encoded.')
+  }
+  let str = ''
+  let acc = dec
+  while (acc > 0) {
+    let val = acc % 26
+    if (val === 0) {
+      val = 26 // Abnormal encoding: 1^26 is 'Z' because there's no 0.
+    }
+    acc = Math.floor((acc - val) / 26)
+    str = String.fromCharCode(64 + val) + str
+  }
+  return str
+}
+
 </script>
 
 <style scoped>
+
+.scroller {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.tc {
+  width: 80px;
+  box-sizing: border-box;
+}
+
+.trh, .tch {
+  font-weight: bold;
+  text-align: center;
+}
+
+.td {
+  text-align: right;
+}
+
+.td, .trh, .tch {
+  height: 1.2em;
+  padding: 0 0.2em;
+  border: 1px solid rgb(235, 235, 235);
+}
+
+.tch {
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+/*
+.tc.even,
+.tc.even > .tch,
+.trh.even,
+.td.even {
+  background: rgb(235, 235, 235);
+} */
+
+.scroller >>> .vue-recycle-scroller__slot {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.scroller >>> .vue-recycle-scroller__item-wrapper {
+  overflow: unset;
+}
+
+.scroller >>> .vue-recycle-scroller__item-view {
+  overflow: unset;
+}
+
 </style>
