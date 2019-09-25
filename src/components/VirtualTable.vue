@@ -11,9 +11,7 @@
     <template #default="{ item, index }">
       <div :class="{tc: true, even: index % 2 ===0, cat: item.isCategory}">
         <div :class="{tch: true, even: index % 2 ===0, cat: item.isCategory}">{{item.name}}</div>
-        <div v-for="(r,i) in item.values" :key="i" :class="{td: true, even: i % 2 ===0, cat: item.isCategory}">
-          {{r}}
-        </div>
+        <div v-for="(r,i) in item.values" :key="i" :class="{td: true, even: i % 2 ===0, cat: item.isCategory}">{{r}}</div>
       </div>
     </template>
   </RecycleScroller>
