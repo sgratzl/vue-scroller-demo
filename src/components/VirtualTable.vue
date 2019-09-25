@@ -3,7 +3,7 @@
     <template #before>
       <div class="tcr">
         <div class="tch"></div>
-        <div v-for="r in rowNames" :key="r" :class="{trh: true, even: i % 2 ===0}">{{r}}</div>
+        <div v-for="(r,i) in rowNames" :key="r" :class="{trh: true, even: i % 2 ===0}">{{r}}</div>
       </div>
     </template>
     <template #default="{ item, index }">
@@ -140,6 +140,10 @@ function base26Converter (dec) {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.trh {
+  background: white;
 }
 /*
 .tc.even,
