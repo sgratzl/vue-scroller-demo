@@ -3,15 +3,15 @@
     <template #before>
       <div class="tcr">
         <div class="tch"></div>
-        <div v-for="(r,i) in rowNames" :key="r" :class="{trh: true, even: i % 2 ===0}">
-          {{r}}
-        </div>
+        <div v-for="(r,i) in rowNames" :key="r" :class="{trh: true, even: i % 2 ===0, highlight: highlightedRows.has(i)}"
+          @click="highlightRow(i)">{{r}}</div>
       </div>
     </template>
     <template #default="{ item, index }">
-      <div :class="{tc: true, even: index % 2 ===0, cat: item.isCategory}">
-        <div :class="{tch: true, even: index % 2 ===0, cat: item.isCategory}">{{item.name}}</div>
-        <div v-for="(r,i) in item.values" :key="i" :class="{td: true, even: i % 2 ===0, cat: item.isCategory}">{{r}}</div>
+      <div :class="{tc: true, even: index % 2 ===0, cat: item.isCategory, highlight: highlightedColumns.has(index)}">
+        <div :class="{tch: true, even: index % 2 ===0, cat: item.isCategory}"
+          @click="highlightColumn(index)">{{item.name}}</div>
+        <div v-for="(r,i) in item.values" :key="i" :class="{td: true, even: i % 2 ===0, cat: item.isCategory, highlight: highlightedRows.has(i)}">{{r}}</div>
       </div>
     </template>
   </RecycleScroller>
@@ -41,6 +41,13 @@ export default {
     catColumnPercentage: {
       type: Number,
       default: 0.1
+    }
+  },
+
+  data () {
+    return {
+      highlightedRows: new Set(),
+      highlightedColumns: new Set()
     }
   },
 
@@ -80,6 +87,24 @@ export default {
     generateCategory () {
       const cats = ['Cat1', 'Cat2', 'Cat3']
       return cats[Math.min(Math.floor(Math.random() * cats.length), cats.length - 1)]
+    },
+
+    highlightColumn (index) {
+      if (this.highlightedColumns.has(index)) {
+        this.highlightedColumns.delete(index)
+      } else {
+        this.highlightedColumns.add(index)
+      }
+      this.highlightedColumns = new Set(this.highlightedColumns)
+    },
+
+    highlightRow (index) {
+      if (this.highlightedRows.has(index)) {
+        this.highlightedRows.delete(index)
+      } else {
+        this.highlightedRows.add(index)
+      }
+      this.highlightedRows = new Set(this.highlightedRows)
     }
   }
 }
@@ -150,20 +175,36 @@ function base26Converter (dec) {
   position: sticky;
   top: 0;
   z-index: 1;
+  cursor: pointer;
 }
 
 .trh {
   background: white;
+  cursor: pointer;
+}
+
+.trh:hover,
+.tch:hover {
+  color: #1793f8;
 }
 
 .td.cat,
 .tch.cat {
-  background: #cd93d8;
+  background-color: #cd93d8;
   text-align: center;
 }
 
 .td:empty {
-  background: lightblue;
+  background-color: lightblue;
+}
+
+.td.highlight,
+.trh.highlight {
+  background: linear-gradient(180deg,#1793f8,rgba(161,213,255,.4) 2px,rgba(161,213,255,.4) calc(100% - 2px),#1793f8);
+}
+
+.tc.highlight {
+  background: linear-gradient(90deg,#1793f8,rgba(161,213,255,.4) 2px,rgba(161,213,255,.4) calc(100% - 2px),#1793f8);
 }
 /*
 .tc.even,
