@@ -3,13 +3,17 @@
     <template #before>
       <div class="tcr">
         <div class="tch"></div>
-        <div v-for="(r,i) in rowNames" :key="r" :class="{trh: true, even: i % 2 ===0}">{{r}}</div>
+        <div v-for="(r,i) in rowNames" :key="r" :class="{trh: true, even: i % 2 ===0}">
+          {{r}}
+        </div>
       </div>
     </template>
     <template #default="{ item, index }">
       <div :class="{tc: true, even: index % 2 ===0, cat: item.isCategory}">
-        <div :class="{tch: true, even: i % 2 ===0, cat: item.isCategory}">{{item.name}}</div>
-        <div v-for="(r,i) in item.values" :key="i" :class="{td: true, even: i % 2 ===0, cat: item.isCategory}">{{r}}</div>
+        <div :class="{tch: true, even: index % 2 ===0, cat: item.isCategory}">{{item.name}}</div>
+        <div v-for="(r,i) in item.values" :key="i" :class="{td: true, even: i % 2 ===0, cat: item.isCategory}">
+          {{r}}
+        </div>
       </div>
     </template>
   </RecycleScroller>
