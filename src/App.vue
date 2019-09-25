@@ -1,17 +1,23 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <virtual-table :cols="cols" :rows="rows"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import VirtualTable from './components/VirtualTable.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    VirtualTable
+  },
+  data () {
+    const url = new URL(window.location.href)
+    return {
+      cols: parseInt(url.searchParams.get('cols') || 10, 10),
+      rows: parseInt(url.searchParams.get('cols') || 10, 10)
+    }
   }
 }
 </script>
@@ -21,8 +27,5 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
