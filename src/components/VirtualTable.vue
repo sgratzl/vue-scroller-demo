@@ -7,9 +7,9 @@
       </div>
     </template>
     <template #default="{ item, index }">
-      <div :class="{tc: true, even: index % 2 ===0}">
-        <div class="tch">{{item.name}}</div>
-        <div v-for="(r,i) in item.values" :key="i" :class="{td: true, even: i % 2 ===0}">{{r}}</div>
+      <div :class="{tc: true, even: index % 2 ===0, cat: item.isCategory}">
+        <div :class="{tch: true, even: i % 2 ===0, cat: item.isCategory}">{{item.name}}</div>
+        <div v-for="(r,i) in item.values" :key="i" :class="{td: true, even: i % 2 ===0, cat: item.isCategory}">{{r}}</div>
       </div>
     </template>
   </RecycleScroller>
@@ -55,6 +55,7 @@ export default {
       for (let j = 0; j < this.cols; ++j) {
         const isCategory = Math.random() < this.catColumnPercentage
         columns.push({
+          isCategory,
           name: this.colNames[j],
           values: isCategory ? this.rowNames.map(() => this.generateCategory()) : this.rowNames.map(() => this.generateValue())
         })
@@ -115,14 +116,21 @@ function base26Converter (dec) {
   right: 0;
 }
 
-.tc {
-  width: 80px;
+* {
   box-sizing: border-box;
 }
 
-.trh, .tch {
-  font-weight: bold;
+.tc {
+  width: 80px;
+}
+
+.tch {
   text-align: center;
+  border-bottom: 1px solid lightgray;
+}
+
+.tcr {
+  border-right: 1px solid lightgray;
 }
 
 .td {
@@ -130,9 +138,9 @@ function base26Converter (dec) {
 }
 
 .td, .trh, .tch {
-  height: 1.2em;
-  padding: 0 0.2em;
-  border: 1px solid rgb(235, 235, 235);
+  height: 25px;
+  padding: 2px 7px;
+  white-space: nowrap;
 }
 
 .tch {
@@ -144,6 +152,16 @@ function base26Converter (dec) {
 
 .trh {
   background: white;
+}
+
+.td.cat,
+.tch.cat {
+  background: #cd93d8;
+  text-align: center;
+}
+
+.td:empty {
+  background: lightblue;
 }
 /*
 .tc.even,
